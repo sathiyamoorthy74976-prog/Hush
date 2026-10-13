@@ -1,0 +1,2 @@
+-- Phase 1 placeholder. Tables, RLS, and profile_view arrive in later phases.
+-- Keep unfold thresholds in config/unfold.ts; they will be mirrored in app_config.

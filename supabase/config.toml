@@ -1,0 +1,23 @@
+# Local Supabase project for Hush. Auth (phone OTP), Postgres + RLS, Storage, Realtime.
+project_id = "hush"
+
+[api]
+enabled = true
+port = 54321
+
+[db]
+port = 54322
+
+[auth]
+enabled = true
+site_url = "http://localhost:8081"
+
+[auth.sms]
+# Phone OTP is configured in later phases. Use the Supabase dashboard or local Inbucket for dev.
+
+[storage]
+enabled = true
+file_size_limit = "20MiB"
+
+[realtime]
+enabled = true
