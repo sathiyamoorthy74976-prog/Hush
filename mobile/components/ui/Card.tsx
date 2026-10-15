@@ -19,7 +19,6 @@ export function Card({ children, style, tint }: Props) {
         {
           backgroundColor: tint ? colors.tint : colors.surface,
           borderColor: colors.border,
-          borderBottomColor: colors.borderStrong,
         },
         style,
       ]}
@@ -31,8 +30,7 @@ export function Card({ children, style, tint }: Props) {
 
 const styles = StyleSheet.create({
   base: {
-    borderWidth: 2,
-    borderBottomWidth: 4,
+    borderWidth: 1,
     borderRadius: radii.lg,
     padding: space.sm,
     gap: space.xs,

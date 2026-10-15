@@ -14,7 +14,8 @@ type Tone =
   | 'success'
   | 'onGreen'
   | 'onOrange'
-  | 'onGold';
+  | 'onGold'
+  | 'onInverse';
 
 type Props = TextProps & {
   variant?: TypeVariant;

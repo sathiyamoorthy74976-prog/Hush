@@ -60,7 +60,7 @@ export default function ChatScreen() {
               {
                 alignSelf: m.me ? 'flex-end' : 'flex-start',
                 backgroundColor: m.me ? colors.brand : colors.surface,
-                borderColor: colors.text,
+                borderColor: m.me ? colors.brandPressed : colors.border,
               },
             ]}
           >

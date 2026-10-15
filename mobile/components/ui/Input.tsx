@@ -23,7 +23,7 @@ export function Input({ label, style, ...rest }: Props) {
           {
             color: colors.text,
             backgroundColor: colors.surface,
-            borderColor: colors.borderStrong,
+            borderColor: colors.border,
           },
           style,
         ]}
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.sm,
     fontFamily: fonts.bold,
     fontSize: 16,
-    borderWidth: 2,
-    borderBottomWidth: 4,
+    borderWidth: 1,
+    borderBottomWidth: 2,
   },
 });

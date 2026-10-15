@@ -31,7 +31,7 @@ export function SparkMeter({ stage, onPress }: Props) {
         <View
           style={[
             styles.fill,
-            { width: `${pct}%`, backgroundColor: colors.gold, borderColor: colors.orangePressed },
+            { width: `${pct}%`, backgroundColor: colors.brand, borderColor: colors.brandPressed },
           ]}
         />
         <View style={styles.markers} pointerEvents="none">
@@ -41,8 +41,8 @@ export function SparkMeter({ stage, onPress }: Props) {
               style={[
                 styles.dot,
                 {
-                  backgroundColor: i < stage ? colors.orange : colors.surface,
-                  borderColor: colors.text,
+                  backgroundColor: i < stage ? colors.brand : colors.surface,
+                  borderColor: colors.borderStrong,
                 },
               ]}
             />

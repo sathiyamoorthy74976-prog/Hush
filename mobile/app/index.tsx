@@ -1,68 +1,78 @@
-import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { APP_NAME, APP_TAGLINE } from '@/constants/app';
-import { AppText, Button, Card, Screen } from '@/components/ui';
+import { AuthPrimaryButton, AuthTextButton } from '@/components/auth';
+import { AppText } from '@/components/ui';
+import { APP_NAME } from '@/constants/app';
+import { useAuthFlowStore } from '@/store/authFlow';
 import { space, useTheme } from '@/theme';
 
-const CARDS = [
-  {
-    emoji: '👻',
-    title: 'Stay anonymous',
-    body: 'Meet a stranger from campus. Their face stays blurred until you actually talk.',
-  },
-  {
-    emoji: '⚡',
-    title: 'Fill the Spark',
-    body: 'Five chat stages. Tags, answers, then a slow unblur. No skip, no paywall.',
-  },
-  {
-    emoji: '🤝',
-    title: 'Match or Pass',
-    body: 'When Spark is full, you both pick in private. Only a mutual Match keeps the chat.',
-  },
-];
-
-export default function OnboardingScreen() {
+export default function WelcomeScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const [page, setPage] = useState(0);
-  const card = CARDS[page];
+  const setMode = useAuthFlowStore((s) => s.setMode);
+
+  const start = (mode: 'create' | 'login') => {
+    setMode(mode);
+    router.push('/auth/phone');
+  };
 
   return (
-    <Screen scroll={false}>
-      <View style={styles.hero}>
-        <AppText variant="caption" tone="brand">
-          {APP_NAME}
-        </AppText>
-        <AppText variant="display">{card.emoji}</AppText>
-        <AppText variant="title">{card.title}</AppText>
-        <AppText tone="textSecondary" style={{ textAlign: 'center' }}>
-          {card.body}
-        </AppText>
+    <View style={[styles.root, { backgroundColor: colors.bg }]}>
+      <SafeAreaView style={styles.topSafe} edges={['top']}>
+        <View style={styles.top}>
+          <View style={[styles.logoMark, { backgroundColor: colors.brand }]}>
+            <AppText style={styles.logoEmoji}>👻</AppText>
+          </View>
+        </View>
+      </SafeAreaView>
+      <View style={[styles.brandBand, { backgroundColor: colors.brand }]}>
+        <AppText variant="display" style={styles.wordmark}>{APP_NAME}</AppText>
       </View>
-      <View style={styles.dots}>
-        {CARDS.map((_, i) => (
-          <View
-            key={i}
-            style={[styles.dot, { backgroundColor: colors.text, opacity: i === page ? 1 : 0.25 }]}
-          />
-        ))}
-      </View>
-      <Card tint>
-        <AppText variant="caption">{APP_TAGLINE}</AppText>
-      </Card>
-      <Button
-        label={page < 2 ? 'Next' : "I'm in"}
-        onPress={() => (page < 2 ? setPage(page + 1) : router.push('/signup'))}
-      />
-    </Screen>
+      <SafeAreaView style={styles.bottomSafe} edges={['bottom']}>
+        <View style={styles.actions}>
+          <AuthPrimaryButton label="Create an account" onPress={() => start('create')} />
+          <AuthTextButton label="I have an account" onPress={() => start('login')} underline />
+          <AppText variant="caption" tone="textMuted" style={styles.legal}>
+            By signing up, you agree to our Terms. See how we use your data in our Privacy Policy.
+          </AppText>
+        </View>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: space.sm, paddingHorizontal: space.sm },
-  dots: { flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  dot: { width: 10, height: 10, borderRadius: 5 },
+  root: { flex: 1 },
+  topSafe: { flex: 1 },
+  top: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: space.xl,
+  },
+  logoMark: {
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoEmoji: { fontSize: 26, lineHeight: 32 },
+  brandBand: {
+    paddingVertical: space.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wordmark: { fontSize: 40, lineHeight: 46, fontWeight: '800', color: '#000000' },
+  bottomSafe: { flex: 1 },
+  actions: {
+    flex: 1,
+    paddingHorizontal: space.md,
+    paddingTop: space.lg,
+    gap: space.xs,
+    justifyContent: 'flex-start',
+  },
+  legal: { textAlign: 'center', marginTop: space.md, lineHeight: 18, paddingHorizontal: space.xs },
 });

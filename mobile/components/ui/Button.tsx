@@ -36,8 +36,8 @@ export function Button({ label, variant = 'primary', disabled, style, ...rest }:
         {
           backgroundColor: disabled ? colors.disabledBg : palette.bg,
           borderBottomColor: disabled ? colors.disabledText : palette.edge,
-          borderBottomWidth: state.pressed || disabled ? 2 : 5,
-          transform: [{ translateY: state.pressed ? 3 : 0 }],
+          borderBottomWidth: variant === 'ghost' ? (state.pressed || disabled ? 1 : 2) : state.pressed || disabled ? 2 : 4,
+          transform: [{ translateY: state.pressed ? 2 : 0 }],
         },
         typeof style === 'function' ? style(state) : style,
       ]}
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     minHeight: minTapTarget,
     paddingHorizontal: space.md,
     paddingVertical: 12,
-    borderRadius: radii.lg,
+    borderRadius: radii.pill,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,

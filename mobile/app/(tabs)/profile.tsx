@@ -28,8 +28,8 @@ export default function ProfileScreen() {
               style={[
                 styles.day,
                 {
-                  backgroundColor: on ? colors.orange : colors.disabledBg,
-                  borderColor: colors.text,
+                  backgroundColor: on ? colors.brand : colors.disabledBg,
+                  borderColor: colors.borderStrong,
                 },
               ]}
             />

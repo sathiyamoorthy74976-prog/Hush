@@ -37,7 +37,7 @@ export default function HomeScreen() {
         </Pressable>
         <Pressable
           onPress={() => router.push('/(tabs)/league')}
-          style={[styles.league, { backgroundColor: colors.tint, borderColor: colors.text }]}
+          style={[styles.league, { backgroundColor: colors.tint, borderColor: colors.border }]}
         >
           <AppText variant="caption">{league} league</AppText>
         </Pressable>
@@ -47,7 +47,7 @@ export default function HomeScreen() {
         <View
           style={[
             styles.xpFill,
-            { width: `${Math.min(100, (xp / xpToNext) * 100)}%`, backgroundColor: colors.gold },
+            { width: `${Math.min(100, (xp / xpToNext) * 100)}%`, backgroundColor: colors.brand },
           ]}
         />
       </View>
@@ -61,7 +61,7 @@ export default function HomeScreen() {
             key={i}
             style={[
               styles.spark,
-              { backgroundColor: i < energy ? colors.brand : colors.disabledBg, borderColor: colors.text },
+              { backgroundColor: i < energy ? colors.brand : colors.disabledBg, borderColor: colors.borderStrong },
             ]}
           />
         ))}
@@ -128,8 +128,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  league: { borderWidth: 2, borderBottomWidth: 4, borderRadius: radii.pill, paddingHorizontal: 12, paddingVertical: 6 },
-  xpTrack: { height: 16, borderRadius: radii.pill, borderWidth: 2, overflow: 'hidden' },
+  league: { borderWidth: 1, borderRadius: radii.pill, paddingHorizontal: 12, paddingVertical: 6 },
+  xpTrack: { height: 10, borderRadius: radii.pill, borderWidth: 1, overflow: 'hidden' },
   xpFill: { height: '100%' },
   energy: { flexDirection: 'row', justifyContent: 'center', gap: space.xs },
   spark: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, transform: [{ rotate: '20deg' }] },

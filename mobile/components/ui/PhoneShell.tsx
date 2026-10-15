@@ -13,7 +13,7 @@ export function PhoneShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <View style={[styles.webPage, { backgroundColor: colors.tint }]}>
+    <View style={[styles.webPage, { backgroundColor: colors.disabledBg }]}>
       <View
         style={[
           styles.phone,

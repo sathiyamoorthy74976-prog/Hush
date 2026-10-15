@@ -47,7 +47,7 @@ export function GameModal({ visible, title, body, cta, onClose, children }: Prop
 }
 
 const styles = StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, opacity: 0.45 },
+  backdrop: { ...StyleSheet.absoluteFill, opacity: 0.45 },
   center: { flex: 1, justifyContent: 'center', padding: space.md },
   card: {
     borderRadius: radii.lg,
