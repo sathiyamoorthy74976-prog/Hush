@@ -21,21 +21,20 @@ export function Chip({ label, selected, onPress }: Props) {
       style={({ pressed }) => [
         styles.base,
         {
-          backgroundColor: selected ? colors.text : colors.surface,
-          borderColor: selected ? colors.text : colors.border,
-          borderBottomColor: selected ? colors.text : colors.borderStrong,
+          backgroundColor: selected ? colors.brand : colors.surface,
+          borderColor: selected ? colors.brandPressed : colors.border,
+          borderBottomColor: selected ? colors.brandPressed : colors.borderStrong,
           borderBottomWidth: pressed ? 1 : 2,
           transform: [{ translateY: pressed ? 1 : 0 }],
         },
       ]}
     >
-      <AppText variant="caption" tone={selected ? 'onInverse' : 'text'}>
+      <AppText variant="caption" tone={selected ? 'onBrand' : 'text'}>
         {label}
       </AppText>
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
   base: {
     minHeight: minTapTarget,
@@ -46,3 +45,4 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
 });
+

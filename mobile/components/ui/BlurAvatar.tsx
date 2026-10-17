@@ -51,7 +51,6 @@ export function BlurAvatar({ size = 88, stage, label }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   ring: {
     borderRadius: 999,
@@ -64,3 +63,4 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
 });
+

@@ -39,7 +39,7 @@ export function LifePhotosScreen() {
       step={step}
       total={total}
       title={config.title}
-      subtitle="Add 3–6 photos of you out living — optional caption for place or activity."
+      subtitle="Add 3–6 photos of you out living — optional caption for place or activity. Skip if you want to add these later."
       onBack={onBack}
       onContinue={onContinue}
       continueDisabled={!isValid}

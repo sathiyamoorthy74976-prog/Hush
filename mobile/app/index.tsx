@@ -28,7 +28,9 @@ export default function WelcomeScreen() {
         </View>
       </SafeAreaView>
       <View style={[styles.brandBand, { backgroundColor: colors.brand }]}>
-        <AppText variant="display" style={styles.wordmark}>{APP_NAME}</AppText>
+        <AppText variant="display" style={[styles.wordmark, { color: colors.brandInk }]}>
+          {APP_NAME}
+        </AppText>
       </View>
       <SafeAreaView style={styles.bottomSafe} edges={['bottom']}>
         <View style={styles.actions}>
@@ -42,7 +44,6 @@ export default function WelcomeScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   root: { flex: 1 },
   topSafe: { flex: 1 },
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  wordmark: { fontSize: 40, lineHeight: 46, fontWeight: '800', color: '#000000' },
+  wordmark: { fontSize: 40, lineHeight: 46, fontWeight: '800' },
   bottomSafe: { flex: 1 },
   actions: {
     flex: 1,
@@ -76,3 +77,4 @@ const styles = StyleSheet.create({
   },
   legal: { textAlign: 'center', marginTop: space.md, lineHeight: 18, paddingHorizontal: space.xs },
 });
+

@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
 import { AppText } from '@/components/ui';
-import { minTapTarget, radii, space } from '@/theme';
+import { minTapTarget, radii, space, useTheme } from '@/theme';
 
 type Props = {
   label: string;
@@ -10,6 +10,8 @@ type Props = {
 };
 
 export function AuthPrimaryButton({ label, onPress, disabled }: Props) {
+  const { colors } = useTheme();
+
   return (
     <Pressable
       accessibilityRole="button"
@@ -19,28 +21,31 @@ export function AuthPrimaryButton({ label, onPress, disabled }: Props) {
       onPress={onPress}
       style={(state) => [
         styles.base,
-        disabled && styles.disabled,
+        {
+          backgroundColor: disabled ? colors.disabledBg : colors.text,
+        },
         state.pressed && !disabled && styles.pressed,
       ]}
     >
-      <AppText variant="heading" tone="onInverse" style={styles.label}>
+      <AppText
+        variant="heading"
+        tone={disabled ? 'textMuted' : 'onInverse'}
+        style={styles.label}
+      >
         {label}
       </AppText>
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
   base: {
     minHeight: minTapTarget,
     paddingVertical: 14,
     paddingHorizontal: space.md,
     borderRadius: radii.pill,
-    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
   },
   pressed: { opacity: 0.88 },
-  disabled: { backgroundColor: '#BDBDBD' },
   label: { fontSize: 16, lineHeight: 20 },
 });

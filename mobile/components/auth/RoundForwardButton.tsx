@@ -27,7 +27,6 @@ export function RoundForwardButton({ enabled, onPress }: Props) {
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
   circle: {
     width: 52,
@@ -37,3 +36,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+

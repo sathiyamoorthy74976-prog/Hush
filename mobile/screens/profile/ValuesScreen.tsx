@@ -91,7 +91,6 @@ export function ValuesScreen() {
     </ProfileStepLayout>
   );
 }
-
 const styles = StyleSheet.create({
   flex: { flex: 1, gap: space.sm },
   list: { flexGrow: 0, maxHeight: 280 },
@@ -111,3 +110,4 @@ const styles = StyleSheet.create({
     gap: space.xs,
   },
 });
+

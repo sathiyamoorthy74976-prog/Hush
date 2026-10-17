@@ -113,7 +113,6 @@ export function ProfilePreviewScreen() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
@@ -157,3 +156,4 @@ const styles = StyleSheet.create({
     paddingVertical: space.sm,
   },
 });
+

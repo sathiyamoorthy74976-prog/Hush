@@ -71,7 +71,6 @@ export function InterestsScreen() {
     </ProfileStepLayout>
   );
 }
-
 const styles = StyleSheet.create({
   chips: {
     flexDirection: 'row',
@@ -86,3 +85,4 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
+

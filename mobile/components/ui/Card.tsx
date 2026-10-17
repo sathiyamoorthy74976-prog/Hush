@@ -27,7 +27,6 @@ export function Card({ children, style, tint }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   base: {
     borderWidth: 1,
@@ -36,3 +35,4 @@ const styles = StyleSheet.create({
     gap: space.xs,
   },
 });
+

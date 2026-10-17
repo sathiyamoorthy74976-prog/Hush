@@ -70,7 +70,7 @@ export function ProfilePictureScreen() {
       </View>
 
       <Modal visible={cameraOpen} animationType="slide">
-        <View style={styles.cameraWrap}>
+        <View style={[styles.cameraWrap, { backgroundColor: colors.text }]}>
           <CameraView ref={cameraRef} style={styles.camera} facing="front" />
           <View style={styles.cameraBar}>
             <Button label="Cancel" variant="ghost" onPress={() => setCameraOpen(false)} />
@@ -81,7 +81,6 @@ export function ProfilePictureScreen() {
     </ProfileStepLayout>
   );
 }
-
 const styles = StyleSheet.create({
   preview: {
     width: '100%',
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
   },
   image: { width: '100%', height: '100%' },
   actions: { gap: space.xs },
-  cameraWrap: { flex: 1, backgroundColor: '#000' },
+  cameraWrap: { flex: 1 },
   camera: { flex: 1 },
   cameraBar: {
     flexDirection: 'row',
@@ -105,3 +104,4 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
 });
+

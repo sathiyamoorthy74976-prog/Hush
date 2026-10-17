@@ -52,7 +52,6 @@ export function ProgressHeader({ step, total, onBack }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: {
     gap: space.xs,
@@ -85,3 +84,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
+

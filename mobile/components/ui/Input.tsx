@@ -31,7 +31,6 @@ export function Input({ label, style, ...rest }: Props) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: { gap: space.xxs },
   input: {
@@ -44,3 +43,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
   },
 });
+

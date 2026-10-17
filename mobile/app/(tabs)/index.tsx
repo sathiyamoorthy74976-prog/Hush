@@ -1,136 +1,258 @@
-import { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  RefreshControl,
+  StyleSheet,
+  View,
+  type ListRenderItemInfo,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import { useRouter } from 'expo-router';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { APP_NAME } from '@/constants/app';
-import { AppText, Button, Card, GameModal, Screen } from '@/components/ui';
-import { useGameStore } from '@/store/game';
-import { radii, space, useTheme } from '@/theme';
+import {
+  CaughtUp,
+  CommentSheet,
+  DiscoverHeader,
+  DiscoverToast,
+  FeedSkeleton,
+  FilterSheet,
+  GoLiveButton,
+  NextProfileButton,
+  ProfileCard,
+  PromptCard,
+} from '@/components/discover';
+import { useDiscoverFeed } from '@/hooks/useDiscoverFeed';
+import { motion, space, useReducedMotion, useTheme } from '@/theme';
+import type { DiscoverFeedItem, DiscoverProfile } from '@/types/discover';
+import { isCaughtUpItem } from '@/types/discover';
 
-const QUESTS = [
-  { title: 'Say hi first', xp: 20 },
-  { title: 'Finish a Spark', xp: 80 },
-  { title: 'Keep a streak', xp: 15 },
-];
+const HEADER_HEIGHT = 52;
+const FOOTER_HEIGHT = 76;
+const TOAST_MESSAGE = "Sent. They'll see it when you match.";
 
 export default function HomeScreen() {
   const router = useRouter();
   const { colors } = useTheme();
-  const { streak, xp, xpToNext, energy, league, useEnergy } = useGameStore();
-  const [chest, setChest] = useState(false);
-  const [milestone, setMilestone] = useState(false);
-  const [empty, setEmpty] = useState(false);
+  const insets = useSafeAreaInsets();
+  const reduceMotion = useReducedMotion();
+  const listRef = useRef<FlatList<DiscoverFeedItem>>(null);
 
-  const goLive = () => {
-    if (!useEnergy()) {
-      setEmpty(true);
-      return;
+  const feed = useDiscoverFeed();
+  const [replyDraft, setReplyDraft] = useState('');
+  const [commentOpen, setCommentOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+  const [commentProfileId, setCommentProfileId] = useState<string | null>(null);
+
+  const tabBarHeight = 56 + Math.max(insets.bottom, 8);
+  const feedHeight =
+    Dimensions.get('window').height - insets.top - HEADER_HEIGHT - FOOTER_HEIGHT - tabBarHeight;
+
+  const pageProgress = useSharedValue(1);
+
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      listRef.current?.scrollToIndex({ index, animated: !reduceMotion });
+      feed.setCurrentIndex(index);
+    },
+    [feed, reduceMotion],
+  );
+
+  const goNext = useCallback(() => {
+    if (feed.currentIndex >= feed.feedItems.length - 1) return;
+    if (!reduceMotion) {
+      pageProgress.value = withTiming(0.95, { duration: motion.discover.pageSpringMs / 2 }, () => {
+        pageProgress.value = withSpring(1, motion.spring);
+      });
     }
-    router.push('/matching');
+    scrollToIndex(feed.currentIndex + 1);
+    setReplyDraft('');
+  }, [feed.currentIndex, feed.feedItems.length, pageProgress, reduceMotion, scrollToIndex]);
+
+  const onMomentumScrollEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const index = Math.round(e.nativeEvent.contentOffset.y / feedHeight);
+    if (index !== feed.currentIndex) {
+      feed.setCurrentIndex(index);
+      setReplyDraft('');
+    }
   };
 
-  return (
-    <Screen>
-      <View style={styles.top}>
-        <Pressable onPress={() => setMilestone(true)} accessibilityLabel={`${streak} day streak`}>
-          <AppText variant="title">🔥 {streak}</AppText>
-        </Pressable>
-        <Pressable
-          onPress={() => router.push('/(tabs)/league')}
-          style={[styles.league, { backgroundColor: colors.tint, borderColor: colors.border }]}
-        >
-          <AppText variant="caption">{league} league</AppText>
-        </Pressable>
-      </View>
+  const activeProfile = feed.activeProfile;
+  const commentProfile = useMemo(() => {
+    if (!commentProfileId) return activeProfile;
+    return feed.profiles.find((p) => p.id === commentProfileId) ?? activeProfile;
+  }, [activeProfile, commentProfileId, feed.profiles]);
 
-      <View style={[styles.xpTrack, { backgroundColor: colors.disabledBg, borderColor: colors.border }]}>
-        <View
-          style={[
-            styles.xpFill,
-            { width: `${Math.min(100, (xp / xpToNext) * 100)}%`, backgroundColor: colors.brand },
-          ]}
+  const showToast = () => setToast(TOAST_MESSAGE);
+
+  const handleSendReply = () => {
+    if (!activeProfile || !replyDraft.trim()) return;
+    feed.addComment(activeProfile.id, replyDraft);
+    setReplyDraft('');
+    showToast();
+  };
+
+  const handleSendComment = (text: string) => {
+    const id = commentProfile?.id ?? activeProfile?.id;
+    if (!id) return;
+    feed.addComment(id, text);
+    showToast();
+  };
+
+  const feedAnimStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pageProgress.value }],
+    opacity: 0.92 + (pageProgress.value - 0.95) * (1 / 0.05) * 0.08,
+  }));
+
+  const renderItem = ({ item, index }: ListRenderItemInfo<DiscoverFeedItem>) => {
+    if (isCaughtUpItem(item)) {
+      return <CaughtUp height={feedHeight} />;
+    }
+    const profile = item as DiscoverProfile;
+    const isActive = index === feed.currentIndex;
+    const cardBodyHeight = Math.round(feedHeight * 0.58);
+
+    return (
+      <View style={[styles.page, { height: feedHeight }]}>
+        <ProfileCard profile={profile} height={cardBodyHeight} isActive={isActive} />
+        <PromptCard
+          profile={profile}
+          isActive={isActive}
+          reply={isActive ? replyDraft : ''}
+          onReplyChange={setReplyDraft}
+          onLike={() => {
+            if (!isActive) return;
+            const wasLiked = profile.prompt.liked;
+            feed.toggleLike(profile.id);
+            if (!wasLiked) showToast();
+          }}
+          onCommentPress={() => {
+            setCommentProfileId(profile.id);
+            setCommentOpen(true);
+          }}
+          onSendReply={() => {
+            if (!isActive) return;
+            handleSendReply();
+          }}
         />
       </View>
-      <AppText variant="caption" tone="textMuted">
-        {xp} / {xpToNext} XP
-      </AppText>
+    );
+  };
 
-      <View style={styles.energy}>
-        {Array.from({ length: 5 }, (_, i) => (
-          <View
-            key={i}
-            style={[
-              styles.spark,
-              { backgroundColor: i < energy ? colors.brand : colors.disabledBg, borderColor: colors.borderStrong },
-            ]}
-          />
-        ))}
+  const onRefresh = feed.currentIndex === 0 ? feed.refresh : undefined;
+
+  return (
+    <SafeAreaView style={[styles.safe, { backgroundColor: colors.bg }]} edges={['top']}>
+      <DiscoverHeader
+        hasNewLikes={feed.hasNewLikes}
+        onFilterPress={() => setFilterOpen(true)}
+        onNotificationsPress={() => {
+          feed.clearNewLikes();
+          router.push('/(tabs)/league');
+        }}
+      />
+
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={HEADER_HEIGHT + insets.top}
+      >
+        {feed.loading ? (
+          <FeedSkeleton height={feedHeight} />
+        ) : (
+          <Animated.View style={[styles.flex, feedAnimStyle]}>
+            <FlatList
+              ref={listRef}
+              data={feed.feedItems}
+              keyExtractor={(item) => item.id}
+              renderItem={renderItem}
+              pagingEnabled
+              decelerationRate="fast"
+              showsVerticalScrollIndicator={false}
+              snapToInterval={feedHeight}
+              snapToAlignment="start"
+              disableIntervalMomentum
+              bounces={feed.currentIndex === 0}
+              onMomentumScrollEnd={onMomentumScrollEnd}
+              getItemLayout={(_, index) => ({
+                length: feedHeight,
+                offset: feedHeight * index,
+                index,
+              })}
+              refreshControl={
+                onRefresh
+                  ? (
+                    <RefreshControl
+                      refreshing={feed.refreshing}
+                      onRefresh={onRefresh}
+                      tintColor={colors.brand}
+                    />
+                  )
+                  : undefined
+              }
+              onScrollToIndexFailed={(info) => {
+                setTimeout(() => {
+                  listRef.current?.scrollToIndex({ index: info.index, animated: false });
+                }, 50);
+              }}
+            />
+          </Animated.View>
+        )}
+      </KeyboardAvoidingView>
+
+      <View style={[styles.footer, { borderTopColor: colors.border, backgroundColor: colors.bg }]}>
+        <GoLiveButton onPress={() => router.push('/matching')} />
+        <NextProfileButton
+          onPress={goNext}
+          disabled={feed.currentIndex >= feed.feedItems.length - 1}
+        />
       </View>
 
-      <Button label="Go Live" onPress={goLive} style={{ minHeight: 64 }} />
-
-      <Pressable onPress={() => router.push('/qotd')}>
-        <Card tint>
-          <AppText variant="caption">Question of the Day</AppText>
-          <AppText variant="heading">What’s the last song you replayed?</AppText>
-          <AppText tone="textMuted">Answer to keep your streak flame.</AppText>
-        </Card>
-      </Pressable>
-
-      {QUESTS.map((q) => (
-        <Card key={q.title}>
-          <AppText variant="heading">{q.title}</AppText>
-          <AppText variant="caption" tone="brand">
-            +{q.xp} XP
-          </AppText>
-        </Card>
-      ))}
-
-      <Pressable onPress={() => router.push('/widget')}>
-        <AppText variant="caption" tone="brand">
-          Add {APP_NAME} streak widget
-        </AppText>
-      </Pressable>
-      <Pressable onPress={() => setChest(true)}>
-        <AppText variant="caption" tone="textMuted">
-          Open a chest
-        </AppText>
-      </Pressable>
-
-      <GameModal
-        visible={chest}
-        title="Chest unlocked"
-        body="Sticker pack + 40 XP. Cosmetic only."
-        cta="Nice"
-        onClose={() => setChest(false)}
-      >
-        <AppText variant="display" style={{ textAlign: 'center' }}>
-          📦
-        </AppText>
-      </GameModal>
-      <GameModal
-        visible={milestone}
-        title={`${streak} day streak`}
-        body="You showed up. Flame grows. Freeze still waiting in Friends."
-        cta="Keep going"
-        onClose={() => setMilestone(false)}
+      <CommentSheet
+        visible={commentOpen}
+        onClose={() => setCommentOpen(false)}
+        comments={commentProfile?.prompt.comments ?? []}
+        onSend={handleSendComment}
       />
-      <GameModal
-        visible={empty}
-        title="Out of energy"
-        body="Sparks refill in the morning. No buying more."
-        cta="Got it"
-        onClose={() => setEmpty(false)}
+
+      <FilterSheet
+        visible={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        filters={feed.filters}
+        onChange={feed.setFilters}
       />
-    </Screen>
+
+      <DiscoverToast message={toast} onHidden={() => setToast(null)} />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  top: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  league: { borderWidth: 1, borderRadius: radii.pill, paddingHorizontal: 12, paddingVertical: 6 },
-  xpTrack: { height: 10, borderRadius: radii.pill, borderWidth: 1, overflow: 'hidden' },
-  xpFill: { height: '100%' },
-  energy: { flexDirection: 'row', justifyContent: 'center', gap: space.xs },
-  spark: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, transform: [{ rotate: '20deg' }] },
+  safe: { flex: 1 },
+  flex: { flex: 1 },
+  page: {
+    paddingHorizontal: space.sm,
+    gap: space.xs,
+    justifyContent: 'flex-start',
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    paddingHorizontal: space.sm,
+    paddingVertical: space.xs,
+    minHeight: FOOTER_HEIGHT,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
 });

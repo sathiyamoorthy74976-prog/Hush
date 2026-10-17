@@ -8,6 +8,7 @@ type Tone =
   | 'textSecondary'
   | 'textMuted'
   | 'brand'
+  | 'accent'
   | 'onBrand'
   | 'onDanger'
   | 'danger'
@@ -24,7 +25,8 @@ type Props = TextProps & {
 
 export function AppText({ variant = 'body', tone = 'text', style, ...rest }: Props) {
   const { colors, typeScale } = useTheme();
-  const color = tone === 'brand' ? colors.brandText : colors[tone];
+  const color =
+    tone === 'brand' ? colors.brandText : tone === 'accent' ? colors.accent : colors[tone];
 
   return <Text {...rest} style={[typeScale[variant], { color }, style]} />;
 }

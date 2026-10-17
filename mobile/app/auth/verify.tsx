@@ -80,7 +80,6 @@ export default function VerifyScreen() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   top: { flex: 1, paddingHorizontal: space.sm, paddingTop: space.xs },
@@ -94,3 +93,4 @@ const styles = StyleSheet.create({
   },
   forwardSpacer: { flex: 1 },
 });
+

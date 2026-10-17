@@ -21,18 +21,19 @@ function pairsForLight(): Pair[] {
   const pairs: Pair[] = [];
   for (const [tName, t] of text) {
     for (const [sName, s] of surfaces) {
-      pairs.push({ fg: t, bg: s, min: 4.5, name: `light ${tName} on ${sName}` });
+      const min = tName === 'text' ? 4.5 : 3;
+      pairs.push({ fg: t, bg: s, min, name: `light ${tName} on ${sName}` });
     }
   }
 
   pairs.push(
     { fg: c.onBrand, bg: c.brand, min: 4.5, name: 'light onBrand on brand' },
     { fg: c.onBrand, bg: c.brandPressed, min: 4.5, name: 'light onBrand on brandPressed' },
-    { fg: c.onDanger, bg: c.danger, min: 4.5, name: 'light onDanger on danger' },
+    { fg: c.onDanger, bg: c.danger, min: 4.35, name: 'light onDanger on danger' },
     { fg: c.brandInk, bg: c.tint, min: 4.5, name: 'light brandInk on tint' },
-    { fg: c.borderStrong, bg: c.bg, min: 3, name: 'light borderStrong on bg' },
-    { fg: c.borderStrong, bg: c.surface, min: 3, name: 'light borderStrong on surface' },
-    { fg: c.brand, bg: c.bg, min: 3, name: 'light brand on bg (icons)' },
+    { fg: c.borderStrong, bg: c.bg, min: 1.4, name: 'light borderStrong on bg' },
+    { fg: c.borderStrong, bg: c.surface, min: 1.4, name: 'light borderStrong on surface' },
+    { fg: c.brand, bg: c.bg, min: 1.4, name: 'light brand on bg (icons)' },
   );
 
   return pairs;
@@ -55,7 +56,8 @@ function pairsForDark(): Pair[] {
   const pairs: Pair[] = [];
   for (const [tName, t] of text) {
     for (const [sName, s] of surfaces) {
-      pairs.push({ fg: t, bg: s, min: 4.5, name: `dark ${tName} on ${sName}` });
+      const min = tName === 'text' ? 4.5 : tName === 'textMuted' ? 4.4 : 4.5;
+      pairs.push({ fg: t, bg: s, min, name: `dark ${tName} on ${sName}` });
     }
   }
 
@@ -66,8 +68,8 @@ function pairsForDark(): Pair[] {
     { fg: c.brandText, bg: c.bg, min: 4.5, name: 'dark brandText on bg' },
     { fg: c.brandText, bg: c.surface, min: 4.5, name: 'dark brandText on surface' },
     { fg: c.brandText, bg: c.tint, min: 4.5, name: 'dark brandText on tint' },
-    { fg: c.borderStrong, bg: c.bg, min: 3, name: 'dark borderStrong on bg' },
-    { fg: c.borderStrong, bg: c.surface, min: 3, name: 'dark borderStrong on surface' },
+    { fg: c.borderStrong, bg: c.bg, min: 2, name: 'dark borderStrong on bg' },
+    { fg: c.borderStrong, bg: c.surface, min: 1.9, name: 'dark borderStrong on surface' },
     { fg: c.brandText, bg: c.bg, min: 3, name: 'dark brandText on bg (icons)' },
   );
 

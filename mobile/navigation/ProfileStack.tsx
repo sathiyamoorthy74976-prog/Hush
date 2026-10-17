@@ -89,7 +89,7 @@ export const PROFILE_STEPS: ProfileStepConfig[] = [
     route: '/profile/life-photos',
     step: 9,
     title: 'Life photos',
-    skippable: false,
+    skippable: true,
   },
 ];
 

@@ -52,7 +52,6 @@ export function Button({ label, variant = 'primary', disabled, style, ...rest }:
     </Pressable>
   );
 }
-
 const styles = StyleSheet.create({
   base: {
     minHeight: minTapTarget,
@@ -65,3 +64,4 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
 });
+

@@ -35,13 +35,15 @@ export function ReactionPicker({ value, onChange }: Props) {
             style={[
               styles.chip,
               {
-                backgroundColor: selected ? colors.brand : colors.surface,
-                borderColor: selected ? colors.text : colors.border,
+                backgroundColor: selected ? colors.accent : colors.surface,
+                borderColor: selected ? colors.accentPressed : colors.border,
               },
             ]}
           >
             <AppText>{r.emoji}</AppText>
-            <AppText variant="caption" tone={selected ? 'text' : 'textSecondary'}>{r.label}</AppText>
+            <AppText variant="caption" tone={selected ? 'onInverse' : 'textSecondary'}>
+              {r.label}
+            </AppText>
           </Pressable>
         );
       })}

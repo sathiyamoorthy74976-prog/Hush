@@ -30,7 +30,6 @@ export function Screen({ children, scroll = true }: Props) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: {
@@ -41,3 +40,4 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
 });
+

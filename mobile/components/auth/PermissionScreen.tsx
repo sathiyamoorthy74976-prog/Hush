@@ -50,7 +50,6 @@ export function PermissionScreen({
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safe: { flex: 1 },
   content: {
@@ -70,3 +69,4 @@ const styles = StyleSheet.create({
   },
   footer: { textAlign: 'center', marginTop: space.sm, lineHeight: 18 },
 });
+
